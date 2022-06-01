@@ -3,13 +3,13 @@ import Head from 'next/head'
 
 const Home: NextPage = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="">
       <Head>
         <title>Reddit 2.0</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>Hello World!</h1>
+      <h1>This is Home!</h1>
     </div>
   )
 }
