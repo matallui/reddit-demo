@@ -10,12 +10,35 @@ export const GET_SUBREDDIT_BY_TOPIC = gql`
   }
 `
 
-export const GET_SUBREDDIT = gql`
+export const GET_ALL_POSTS = gql`
   query MyQuery {
-    getSubredditList {
+    getPostList {
       id
-      topic
+      title
+      body
+      username
+      image
+      subreddit_id
       created_at
+      comments {
+        created_at
+        id
+        post_id
+        text
+        username
+      }
+      subreddit {
+        created_at
+        id
+        topic
+      }
+      votes {
+        created_at
+        id
+        post_id
+        upvote
+        username
+      }
     }
   }
 `
