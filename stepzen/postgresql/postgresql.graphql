@@ -117,6 +117,17 @@ type Query {
       """
       configuration: "postgresql_config"
     )
+  getSubredditListLimit(limit: Int!): [Subreddit]
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      query: """
+      select * from "subreddit"
+      order by "created_at" desc
+      limit $1
+      """
+      configuration: "postgresql_config"
+    )
   getVoteList: [Vote]
     @dbquery(
       type: "postgresql"
@@ -169,6 +180,15 @@ type Mutation {
       type: "postgresql"
       schema: "public"
       table: "comment"
+      dml: INSERT
+      configuration: "postgresql_config"
+    )
+
+  insertVote(post_id: ID!, username: String!, upvote: Boolean!): Vote
+    @dbquery(
+      type: "postgresql"
+      schema: "public"
+      table: "vote"
       dml: INSERT
       configuration: "postgresql_config"
     )

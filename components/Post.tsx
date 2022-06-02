@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -12,12 +12,69 @@ import TimeAgo from 'react-timeago'
 import Avatar from './Avatar'
 import Link from 'next/link'
 import { Jelly } from '@uiball/loaders'
+import { useSession } from 'next-auth/react'
+import toast from 'react-hot-toast'
+import { GET_ALL_POSTS, GET_VOTES_BY_POST_ID } from '../graphql/queries'
+import { useMutation, useQuery } from '@apollo/client'
+import { ADD_VOTE } from '../graphql/mutations'
 
 interface Props {
   post: Post
 }
 
 const Post: React.FC<Props> = ({ post }) => {
+  const [vote, setVote] = useState<boolean | undefined>(undefined)
+  const [voteCount, setVoteCount] = useState(0)
+  const { data: session } = useSession()
+  const { data, loading } = useQuery(GET_VOTES_BY_POST_ID, {
+    variables: { post_id: post?.id },
+  })
+  const [addVote] = useMutation(ADD_VOTE, {
+    refetchQueries: [GET_VOTES_BY_POST_ID, 'getVoteListByPostId'],
+  })
+
+  useEffect(() => {
+    const votes: Vote[] = data?.getVoteListByPostId
+
+    const vote = votes?.find(
+      (vote) => vote.username === session?.user?.name
+    )?.upvote
+
+    const voteCount = votes?.reduce((prev, curr) => {
+      if (curr.upvote) {
+        return prev + 1
+      } else {
+        return prev - 1
+      }
+    }, 0)
+
+    if (!votes || votes.length === 0) {
+      setVoteCount(0)
+    } else if (voteCount === 0) {
+      setVoteCount(votes[0]?.upvote ? 1 : -1)
+    } else {
+      setVoteCount(voteCount)
+    }
+
+    setVote(vote)
+  }, [data])
+
+  const upvote = async (isUpvote: boolean) => {
+    if (!session) {
+      toast("You'll need to sign in to vote.")
+      return
+    }
+    if (vote && isUpvote) return
+    if (vote === false && !isUpvote) return
+    await addVote({
+      variables: {
+        post_id: post.id,
+        username: session.user?.name,
+        upvote: isUpvote,
+      },
+    })
+  }
+
   if (!post) {
     return (
       <div className="flex w-full items-center justify-center p-10 text-xl">
@@ -36,9 +93,19 @@ const Post: React.FC<Props> = ({ post }) => {
           className="flex flex-col items-center justify-start space-y-1
         rounded-l-md bg-gray-50 p-4 text-gray-400"
         >
-          <ArrowUpIcon className="vote-btn hover:text-red-400" />
-          <p className="text-black font-bold text-xs">0</p>
-          <ArrowDownIcon className="vote-btn hover:text-blue-400" />
+          <ArrowUpIcon
+            onClick={() => upvote(true)}
+            className={`vote-btn hover:text-blue-400 ${
+              vote && 'text-blue-400'
+            }`}
+          />
+          <p className={`text-black font-bold text-xs`}>{voteCount}</p>
+          <ArrowDownIcon
+            onClick={() => upvote(false)}
+            className={`vote-btn hover:text-red-400 ${
+              vote === false && 'text-red-400'
+            }`}
+          />
         </div>
 
         <div className="p-2 pb-1">
