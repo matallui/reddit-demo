@@ -16,9 +16,11 @@ type FormData = {
   subreddit: string
 }
 
-interface Props {}
+interface Props {
+  subreddit?: string
+}
 
-const PostBox: React.FC<Props> = () => {
+const PostBox: React.FC<Props> = ({ subreddit }) => {
   const { data: session } = useSession()
   const [imageBoxOpen, setImageBoxOpen] = useState(false)
   const [addPost] = useMutation(ADD_POST, {
@@ -45,7 +47,7 @@ const PostBox: React.FC<Props> = () => {
       } = await client.query({
         query: GET_SUBREDDIT_BY_TOPIC,
         variables: {
-          topic: formData.subreddit,
+          topic: subreddit || formData.subreddit,
         },
       })
 
@@ -60,7 +62,7 @@ const PostBox: React.FC<Props> = () => {
           data: { insertSubreddit: newSubreddit },
         } = await addSubreddit({
           variables: {
-            topic: formData.subreddit,
+            topic: subreddit || formData.subreddit,
           },
         })
 
@@ -121,7 +123,11 @@ const PostBox: React.FC<Props> = () => {
           className="flex-1 bg-gray-50 p-2 pl-5 outline-none rounded-md"
           type="text"
           placeholder={
-            session ? 'Create a post by entering a title!' : 'Sign in to post'
+            session
+              ? subreddit
+                ? `Create a post in r/${subreddit}`
+                : 'Create a post by entering a title!'
+              : 'Sign in to post'
           }
         />
 
@@ -146,15 +152,17 @@ const PostBox: React.FC<Props> = () => {
             />
           </div>
 
-          <div className="flex items-center px-2">
-            <p className="min-w-[90px]">Subreddit:</p>
-            <input
-              className="m-2 flex-1 bg-blue-50 p-2 outline-none"
-              {...register('subreddit', { required: true })}
-              type="text"
-              placeholder="i.e., reactjs"
-            />
-          </div>
+          {!subreddit && (
+            <div className="flex items-center px-2">
+              <p className="min-w-[90px]">Subreddit:</p>
+              <input
+                className="m-2 flex-1 bg-blue-50 p-2 outline-none"
+                {...register('subreddit', { required: true })}
+                type="text"
+                placeholder="i.e., reactjs"
+              />
+            </div>
+          )}
 
           {imageBoxOpen && (
             <div className="flex items-center px-2">
