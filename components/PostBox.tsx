@@ -36,12 +36,11 @@ const PostBox: React.FC<Props> = ({ subreddit }) => {
   } = useForm<FormData>()
 
   const onSubmit = handleSubmit(async (formData) => {
-    console.log(formData)
     const notification = toast.loading('Creating new post...')
 
     try {
       // Query for the subreddit topic
-      console.log(`Checking if subreddit "${formData.subreddit}" exists...`)
+      // console.log(`Checking if subreddit "${formData.subreddit}" exists...`)
       const {
         data: { getSubredditListByTopic },
       } = await client.query({
@@ -56,7 +55,7 @@ const PostBox: React.FC<Props> = ({ subreddit }) => {
 
       if (!subredditExists) {
         // Create subreddit
-        console.log('Creating subreddit...')
+        // console.log('Creating subreddit...')
 
         const {
           data: { insertSubreddit: newSubreddit },
@@ -66,16 +65,16 @@ const PostBox: React.FC<Props> = ({ subreddit }) => {
           },
         })
 
-        console.log('Subreddit created:', newSubreddit)
+        // console.log('Subreddit created:', newSubreddit)
 
         subredditId = newSubreddit.id
       } else {
         // Use existing subreddit
-        console.log('Using existing subreddit:', getSubredditListByTopic)
+        // console.log('Using existing subreddit:', getSubredditListByTopic)
         subredditId = getSubredditListByTopic[0].id
       }
 
-      console.log('Creating post...')
+      // console.log('Creating post...')
       const image = formData.postImage || ''
 
       const {
@@ -90,7 +89,7 @@ const PostBox: React.FC<Props> = ({ subreddit }) => {
         },
       })
 
-      console.log('New post added:', newPost)
+      // console.log('New post added:', newPost)
 
       // Clear up form fields
       setValue('postBody', '')
@@ -112,7 +111,7 @@ const PostBox: React.FC<Props> = ({ subreddit }) => {
   return (
     <form
       onSubmit={onSubmit}
-      className="sticky top-16 z-50 bg-white border border-gray-300 rounded-md p-2"
+      className="sticky top-20 z-50 bg-white border border-gray-300 rounded-md p-2"
     >
       <div className="flex items-center space-x-3">
         <Avatar />

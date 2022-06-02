@@ -1,4 +1,4 @@
-type Comment = {
+interface Comment  {
   created_at: string
   id: number
   post_id: number
