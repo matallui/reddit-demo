@@ -111,7 +111,7 @@ const PostBox: React.FC<Props> = ({ subreddit }) => {
   return (
     <form
       onSubmit={onSubmit}
-      className="sticky top-20 z-50 bg-white border border-gray-300 rounded-md p-2"
+      className="sticky top-14 lg:top-[4.1rem] z-50 bg-white border border-gray-300 rounded-md p-2"
     >
       <div className="flex items-center space-x-3">
         <Avatar />
