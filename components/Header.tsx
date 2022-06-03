@@ -27,11 +27,13 @@ const Header: React.FC<Props> = () => {
     <div className="sticky top-0 z-50 flex space-x-2 bg-white px-2 sm:px-4 py-2 shadow-sm items-center">
       <div className="relative h-10 w-20 flex-shrink-0 cursor-pointer">
         <Link href="/">
-          <Image
-            src="https://links.papareact.com/fqy"
-            objectFit="contain"
-            layout="fill"
-          />
+          <a className='absolute w-full h-full'>
+            <Image
+              src="https://links.papareact.com/fqy"
+              objectFit="contain"
+              layout="fill"
+            />
+          </a>
         </Link>
       </div>
 
